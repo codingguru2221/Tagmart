@@ -96,6 +96,7 @@ export default function AdminOrders() {
                   <tr className="border-b bg-muted/40">
                     <th className="text-left px-4 py-3 font-semibold">Order</th>
                     <th className="text-left px-4 py-3 font-semibold">Customer</th>
+                    <th className="text-left px-4 py-3 font-semibold">Method</th>
                     <th className="text-left px-4 py-3 font-semibold">Items</th>
                     <th className="text-left px-4 py-3 font-semibold">Total</th>
                     <th className="text-left px-4 py-3 font-semibold">Date</th>
@@ -110,6 +111,11 @@ export default function AdminOrders() {
                       <td className="px-4 py-3">
                         <p className="font-medium">{order.customerName}</p>
                         <p className="text-xs text-muted-foreground">{order.phone}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="text-xs border">
+                          {(order.fulfillmentMethod ?? "delivery") === "pickup" ? "Pickup" : "Delivery"}
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{order.items?.length} item(s)</td>
                       <td className="px-4 py-3 font-bold">Rs. {order.total?.toLocaleString()}</td>

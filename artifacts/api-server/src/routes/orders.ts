@@ -18,6 +18,7 @@ async function buildOrderResponse(order: typeof ordersTable.$inferSelect) {
     customerEmail: order.customerEmail,
     status: order.status,
     total: Number(order.total),
+    fulfillmentMethod: order.fulfillmentMethod,
     address: order.address,
     phone: order.phone,
     createdAt: order.createdAt.toISOString(),
@@ -123,6 +124,7 @@ router.post("/orders", async (req, res) => {
       customerEmail,
       status: "pending",
       total: String(total),
+      fulfillmentMethod: parsed.data.fulfillmentMethod ?? "delivery",
       address: parsed.data.address,
       phone: parsed.data.phone,
     })

@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { setAuth } from "@/lib/auth";
-import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+
+const LOGO_SRC = "/TG%20logo.png";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -41,9 +43,7 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-foreground px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-5">
-            <ShieldCheck className="w-10 h-10 text-primary-foreground" />
-          </div>
+          <img src={LOGO_SRC} alt="Tagmart logo" className="mx-auto mb-5 h-20 w-20 rounded-2xl object-contain" />
           <h1 className="text-3xl font-black text-background mb-2">Admin Portal</h1>
           <p className="text-background/60">Tagmart Management Console</p>
         </div>

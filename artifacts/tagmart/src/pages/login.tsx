@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { setAuth } from "@/lib/auth";
-import { ShoppingBag, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+
+const LOGO_SRC = "/TG%20logo.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -41,9 +43,7 @@ export default function Login() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-muted/30">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4">
-            <ShoppingBag className="w-8 h-8 text-primary-foreground" />
-          </div>
+          <img src={LOGO_SRC} alt="Tagmart logo" className="mx-auto mb-4 h-16 w-16 rounded-2xl object-contain" />
           <h1 className="text-3xl font-black tracking-tight mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to your Tagmart account</p>
         </div>

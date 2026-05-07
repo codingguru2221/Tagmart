@@ -1,0 +1,17 @@
+{
+  "name": "Tagmart Super Market",
+  "short_name": "Tagmart",
+  "description": "Online megamart for groceries, fashion, electronics, beauty, home care, stationery, and everyday essentials.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf2",
+  "theme_color": "#ff4d1d",
+  "icons": [
+    {
+      "src": "/TG%20logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

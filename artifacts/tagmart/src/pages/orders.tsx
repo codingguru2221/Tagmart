@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, ArrowRight } from "lucide-react";
+import { Package, ArrowRight, Store, Truck } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -60,7 +60,14 @@ export default function Orders() {
                   <p className="text-sm text-muted-foreground mb-1">
                     {order.items?.length} item(s) — {new Date(order.createdAt ?? "").toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
                   </p>
-                  <p className="text-sm text-muted-foreground line-clamp-1">{order.address}</p>
+                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground line-clamp-1">
+                    {(order.fulfillmentMethod ?? "delivery") === "pickup" ? (
+                      <Store className="h-3.5 w-3.5 shrink-0" />
+                    ) : (
+                      <Truck className="h-3.5 w-3.5 shrink-0" />
+                    )}
+                    <span>{(order.fulfillmentMethod ?? "delivery") === "pickup" ? "Pick up from store" : order.address}</span>
+                  </p>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="font-bold text-lg">Rs. {order.total?.toLocaleString()}</span>

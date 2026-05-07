@@ -61,6 +61,7 @@ router.get("/dashboard/recent-orders", async (_req, res) => {
         customerEmail: order.customerEmail,
         status: order.status,
         total: Number(order.total),
+        fulfillmentMethod: order.fulfillmentMethod,
         address: order.address,
         phone: order.phone,
         createdAt: order.createdAt.toISOString(),

@@ -115,6 +115,7 @@ export interface Order {
   customerEmail?: string;
   status: OrderStatus;
   total: number;
+  fulfillmentMethod?: "delivery" | "pickup";
   address?: string;
   phone?: string;
   items: OrderItem[];
@@ -134,6 +135,7 @@ export type CreateOrderBodyItemsItem = {
 export interface CreateOrderBody {
   items: CreateOrderBodyItemsItem[];
   address: string;
+  fulfillmentMethod?: "delivery" | "pickup";
   phone: string;
 }
 

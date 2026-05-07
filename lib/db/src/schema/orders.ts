@@ -21,6 +21,7 @@ export const ordersTable = pgTable("orders", {
   customerEmail: text("customer_email").notNull(),
   status: orderStatusEnum("status").notNull().default("pending"),
   total: numeric("total", { precision: 10, scale: 2 }).notNull(),
+  fulfillmentMethod: text("fulfillment_method").notNull().default("delivery"),
   address: text("address").notNull(),
   phone: text("phone").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

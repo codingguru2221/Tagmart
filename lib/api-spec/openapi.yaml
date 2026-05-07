@@ -585,6 +585,9 @@ components:
           enum: [pending, confirmed, processing, shipped, delivered, cancelled]
         total:
           type: number
+        fulfillmentMethod:
+          type: string
+          enum: [delivery, pickup]
         address:
           type: string
         phone:
@@ -623,6 +626,10 @@ components:
             required: [productId, quantity]
         address:
           type: string
+        fulfillmentMethod:
+          type: string
+          enum: [delivery, pickup]
+          default: delivery
         phone:
           type: string
       required: [items, address, phone]

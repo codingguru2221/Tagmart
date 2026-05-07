@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /orders
+Disallow: /order/
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://www.tagmartsupermarket.com/sitemap.xml

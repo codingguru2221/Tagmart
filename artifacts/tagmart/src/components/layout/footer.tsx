@@ -1,14 +1,14 @@
 import { Link } from "wouter";
 
+const LOGO_SRC = "/TG%20logo.png";
+
 export default function Footer() {
   return (
     <footer className="bg-foreground text-background py-12 mt-auto">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold text-xl">
-              T
-            </div>
+            <img src={LOGO_SRC} alt="Tagmart logo" className="h-9 w-9 rounded-md object-contain" />
             <span className="text-xl font-bold tracking-tight">Tagmart</span>
           </div>
           <p className="text-muted text-sm max-w-xs">
@@ -51,11 +51,22 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-sm text-muted text-center flex flex-col md:flex-row justify-between items-center gap-4">
-        <p>&copy; {new Date().getFullYear()} Tagmart Super Market. All rights reserved.</p>
-        <div className="flex gap-4">
-          <Link href="/admin" className="hover:text-primary transition-colors">Admin Portal</Link>
+      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-sm text-muted text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="space-y-2">
+          <p>&copy; {new Date().getFullYear()} Tagmart Super Market. All rights reserved.</p>
+          <p>
+            Developed by{" "}
+            <a
+              href="https://thecodexss.in/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-background hover:text-primary transition-colors"
+            >
+              TheCOdex Software Solutions
+            </a>
+          </p>
         </div>
+        <Link href="/admin" className="hover:text-primary transition-colors">Admin Portal</Link>
       </div>
     </footer>
   );

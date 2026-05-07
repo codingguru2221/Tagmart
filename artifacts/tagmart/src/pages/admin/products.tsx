@@ -51,6 +51,7 @@ export default function AdminProducts() {
 
   const { data, isLoading } = useListProducts({ limit: 100, offset: 0 });
   const { data: categories } = useListCategories();
+  const categoryList = Array.isArray(categories) ? categories : [];
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
 
@@ -148,7 +149,7 @@ export default function AdminProducts() {
                   <Select value={form.categoryId} onValueChange={(v) => handleChange("categoryId", v)}>
                     <SelectTrigger data-testid="select-category"><SelectValue placeholder="Select..." /></SelectTrigger>
                     <SelectContent>
-                      {categories?.map((c) => (
+                      {categoryList.map((c) => (
                         <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
                       ))}
                     </SelectContent>

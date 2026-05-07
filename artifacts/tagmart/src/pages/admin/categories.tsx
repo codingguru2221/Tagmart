@@ -33,6 +33,7 @@ export default function AdminCategories() {
   }, [user, setLocation]);
 
   const { data: categories, isLoading } = useListCategories();
+  const categoryList = Array.isArray(categories) ? categories : [];
   const createCategory = useCreateCategory();
   const deleteCategory = useDeleteCategory();
 
@@ -82,7 +83,7 @@ export default function AdminCategories() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black">Categories</h1>
-          <p className="text-muted-foreground mt-1">{categories?.length ?? 0} categories</p>
+          <p className="text-muted-foreground mt-1">{categoryList.length} categories</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -124,7 +125,7 @@ export default function AdminCategories() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories?.map((cat) => (
+          {categoryList.map((cat) => (
             <Card key={cat.id} className="overflow-hidden" data-testid={`category-card-${cat.id}`}>
               <div className="h-28 bg-muted overflow-hidden relative">
                 {cat.imageUrl ? (

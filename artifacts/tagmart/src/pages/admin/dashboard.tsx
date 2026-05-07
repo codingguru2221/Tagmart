@@ -13,9 +13,11 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import {
-  ShoppingBag, TrendingUp, Package, Users, Clock, CheckCircle,
+  TrendingUp, Package, Users, Clock, CheckCircle,
   LayoutDashboard, ShoppingCart, Tag, LogOut, List,
 } from "lucide-react";
+
+const LOGO_SRC = "/TG%20logo.png";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -50,9 +52,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
       <aside className="w-60 bg-foreground text-background flex flex-col fixed inset-y-0 left-0 z-50">
         <div className="p-6 border-b border-background/10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src={LOGO_SRC} alt="Tagmart logo" className="h-10 w-10 rounded-lg object-contain" />
             <div>
               <div className="font-black text-lg leading-none">Tagmart</div>
               <div className="text-xs text-background/50 mt-0.5">Admin Panel</div>
@@ -174,7 +174,9 @@ export default function AdminDashboard() {
               <div key={order.id} className="flex items-center justify-between text-sm py-1.5 border-b last:border-0">
                 <div>
                   <p className="font-semibold">#{order.id} — {order.customerName}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(order.createdAt ?? "").toLocaleDateString()}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(order.createdAt ?? "").toLocaleDateString()} - {(order.fulfillmentMethod ?? "delivery") === "pickup" ? "Pickup" : "Delivery"}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold">Rs. {order.total?.toLocaleString()}</span>

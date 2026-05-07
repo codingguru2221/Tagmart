@@ -270,6 +270,7 @@ export const ListOrdersResponse = zod.object({
         "cancelled",
       ]),
       total: zod.number(),
+      fulfillmentMethod: zod.enum(["delivery", "pickup"]).optional(),
       address: zod.string().optional(),
       phone: zod.string().optional(),
       items: zod.array(
@@ -298,6 +299,7 @@ export const CreateOrderBody = zod.object({
     }),
   ),
   address: zod.string(),
+  fulfillmentMethod: zod.enum(["delivery", "pickup"]).default("delivery").optional(),
   phone: zod.string(),
 });
 
@@ -322,6 +324,7 @@ export const GetOrderResponse = zod.object({
     "cancelled",
   ]),
   total: zod.number(),
+  fulfillmentMethod: zod.enum(["delivery", "pickup"]).optional(),
   address: zod.string().optional(),
   phone: zod.string().optional(),
   items: zod.array(
@@ -368,6 +371,7 @@ export const UpdateOrderStatusResponse = zod.object({
     "cancelled",
   ]),
   total: zod.number(),
+  fulfillmentMethod: zod.enum(["delivery", "pickup"]).optional(),
   address: zod.string().optional(),
   phone: zod.string().optional(),
   items: zod.array(
@@ -413,6 +417,7 @@ export const GetRecentOrdersResponseItem = zod.object({
     "cancelled",
   ]),
   total: zod.number(),
+  fulfillmentMethod: zod.enum(["delivery", "pickup"]).optional(),
   address: zod.string().optional(),
   phone: zod.string().optional(),
   items: zod.array(

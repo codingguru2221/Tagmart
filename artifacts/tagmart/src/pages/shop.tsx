@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useSearch } from "wouter";
-import { useListProducts, useListCategories, getListProductsQueryKey } from "@workspace/api-client-react";
+import { useLocation, useSearch } from "wouter";
 import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal, Star } from "lucide-react";
+import { CreditCard, Search, ShoppingCart, SlidersHorizontal, Sparkles, Star } from "lucide-react";
 import { Link } from "wouter";
+import { demoCategoriesWithCounts, listDemoProducts } from "@/lib/demo-data";
+import { useToast } from "@/hooks/use-toast";
+import { Seo } from "@/lib/seo";
 
 export default function Shop() {
   const search = useSearch();
@@ -17,24 +19,68 @@ export default function Shop() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(initCategory);
 
-  const { data: categories } = useListCategories();
-  const { data: productsData, isLoading } = useListProducts(
-    {
-      search: searchTerm || undefined,
-      categoryId: selectedCategory ? categories?.find((c) => c.slug === selectedCategory)?.id : undefined,
-      limit: 48,
-      offset: 0,
-    },
-    { query: { queryKey: getListProductsQueryKey({ search: searchTerm, categoryId: categories?.find((c) => c.slug === selectedCategory)?.id }) } }
-  );
-  const { addToCart } = useCart();
+  const categoryList = demoCategoriesWithCounts;
+  const selectedCategoryId = selectedCategory ? categoryList.find((c) => c.slug === selectedCategory)?.id : undefined;
+  const productsData = listDemoProducts({
+    search: searchTerm || undefined,
+    categoryId: selectedCategoryId,
+    limit: 48,
+    offset: 0,
+  });
+  const isLoading = false;
+  const { addToCart, clearCart } = useCart();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const pageTitle = selectedCategory ? categoryList.find((c) => c.slug === selectedCategory)?.name ?? "Products" : "All Products";
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Seo
+        title={`${pageTitle} | Shop Online at Tagmart Super Market`}
+        description={`Browse ${pageTitle.toLowerCase()} at Tagmart Super Market. Compare products, prices, discounts, ratings, and availability before checkout.`}
+        path={selectedCategory ? `/shop?category=${selectedCategory}` : "/shop"}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: `${pageTitle} - Tagmart Super Market`,
+          description: `Online shopping collection for ${pageTitle.toLowerCase()} at Tagmart Super Market.`,
+          mainEntity: {
+            "@type": "ItemList",
+            itemListElement: productsData.products.map((product, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              url: `${window.location.origin}/product/${product.id}`,
+              name: product.name,
+            })),
+          },
+        }}
+      />
+      <div className="mb-8 overflow-hidden rounded-xl border bg-foreground text-background shadow-xl">
+        <div className="relative px-5 py-8 md:px-8">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1800&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <Badge className="mb-3 border-white/15 bg-white/10 text-white hover:bg-white/10">
+                <Sparkles className="mr-2 h-3.5 w-3.5" />
+                Curated demo catalog
+              </Badge>
+              <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+                {selectedCategory ? categoryList.find((c) => c.slug === selectedCategory)?.name ?? "Products" : "All Products"}
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/75">
+                Browse polished product cards with real pricing, ratings, sale labels, and stock states.
+              </p>
+            </div>
+            <div className="rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-sm font-bold backdrop-blur">
+              {productsData.total} products found
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <aside className="w-full md:w-64 shrink-0">
-          <div className="bg-card border rounded-2xl p-5 sticky top-4">
+          <div className="bg-card border rounded-xl p-5 sticky top-24 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
               <SlidersHorizontal className="w-4 h-4" />
               <h2 className="font-bold">Filter by Category</h2>
@@ -42,15 +88,15 @@ export default function Shop() {
             <div className="space-y-1">
               <button
                 onClick={() => setSelectedCategory("")}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === "" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"}`}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-colors ${selectedCategory === "" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted text-foreground"}`}
               >
                 All Products
               </button>
-              {categories?.map((cat) => (
+              {categoryList.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex justify-between items-center ${selectedCategory === cat.slug ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"}`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-colors flex justify-between items-center ${selectedCategory === cat.slug ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted text-foreground"}`}
                   data-testid={`filter-category-${cat.slug}`}
                 >
                   <span>{cat.name}</span>
@@ -67,9 +113,9 @@ export default function Shop() {
         <div className="flex-1">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold">
-                {selectedCategory ? categories?.find((c) => c.slug === selectedCategory)?.name ?? "Products" : "All Products"}
-              </h1>
+              <h2 className="text-2xl font-black">
+                {selectedCategory ? categoryList.find((c) => c.slug === selectedCategory)?.name ?? "Products" : "All Products"}
+              </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {productsData?.total ?? 0} products found
               </p>
@@ -78,7 +124,7 @@ export default function Shop() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search products..."
-                className="pl-9"
+                className="h-11 rounded-full bg-card pl-9 shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 data-testid="input-search"
@@ -101,11 +147,11 @@ export default function Shop() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {productsData?.products?.map((product) => (
-                <Card key={product.id} className="overflow-hidden flex flex-col hover-elevate group" data-testid={`card-product-${product.id}`}>
+                <Card key={product.id} className="overflow-hidden flex flex-col group border-card-border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" data-testid={`card-product-${product.id}`}>
                   <Link href={`/product/${product.id}`}>
                     <div className="aspect-square bg-white relative p-3 border-b overflow-hidden">
                       {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                        <img src={product.imageUrl} alt={product.name} className="w-full h-full rounded-lg object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-sm">No image</div>
                       )}
@@ -119,10 +165,10 @@ export default function Shop() {
                       )}
                     </div>
                   </Link>
-                  <CardContent className="p-3 flex flex-col flex-1">
-                    <div className="text-xs text-muted-foreground mb-1">{product.categoryName}</div>
+                  <CardContent className="p-3 flex min-h-[168px] flex-col flex-1">
+                    <div className="text-xs font-medium uppercase text-muted-foreground mb-1">{product.categoryName}</div>
                     <Link href={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-sm leading-tight mb-2 flex-1 line-clamp-2 hover:text-primary transition-colors">{product.name}</h3>
+                      <h3 className="font-bold text-sm leading-tight mb-2 min-h-9 line-clamp-2 hover:text-primary transition-colors">{product.name}</h3>
                     </Link>
                     {product.rating && (
                       <div className="flex items-center gap-1 mb-2">
@@ -131,20 +177,40 @@ export default function Shop() {
                       </div>
                     )}
                     <div className="flex items-center gap-1 mb-3">
-                      <span className="font-bold text-sm">Rs. {product.price?.toLocaleString()}</span>
+                      <span className="font-black text-sm">Rs. {product.price?.toLocaleString()}</span>
                       {product.originalPrice && (
                         <span className="text-xs text-muted-foreground line-through">Rs. {product.originalPrice?.toLocaleString()}</span>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      className="w-full text-xs"
-                      disabled={product.stock === 0}
-                      onClick={() => addToCart(product)}
-                      data-testid={`button-add-to-cart-${product.id}`}
-                    >
-                      {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-                    </Button>
+                    <div className="mt-auto grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full text-xs font-bold hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-md"
+                        disabled={product.stock === 0}
+                        onClick={() => {
+                          addToCart(product);
+                          toast({ title: "Added to cart", description: product.name });
+                        }}
+                        data-testid={`button-add-to-cart-${product.id}`}
+                      >
+                        {product.stock > 0 && <ShoppingCart className="h-3.5 w-3.5" />}
+                        Cart
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="w-full text-xs font-bold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
+                        disabled={product.stock === 0}
+                        onClick={() => {
+                          clearCart();
+                          addToCart(product);
+                          setLocation("/checkout");
+                        }}
+                      >
+                        {product.stock > 0 && <CreditCard className="h-3.5 w-3.5" />}
+                        {product.stock === 0 ? "Out" : "Buy Now"}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

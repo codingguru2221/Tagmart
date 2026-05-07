@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Package, Store, Truck } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -16,6 +16,11 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUS_STEPS = ["pending", "confirmed", "processing", "shipped", "delivered"];
+
+const FULFILLMENT_LABELS: Record<string, string> = {
+  delivery: "Home delivery",
+  pickup: "Pick up from store",
+};
 
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +49,8 @@ export default function OrderDetail() {
   }
 
   const currentStep = STATUS_STEPS.indexOf(order.status);
+  const fulfillmentMethod = order.fulfillmentMethod ?? "delivery";
+  const isPickup = fulfillmentMethod === "pickup";
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -73,7 +80,9 @@ export default function OrderDetail() {
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i <= currentStep ? "bg-primary border-primary text-primary-foreground" : "bg-background border-muted-foreground/30 text-muted-foreground"}`}>
                     {i + 1}
                   </div>
-                  <span className="text-xs mt-2 text-muted-foreground capitalize hidden sm:block">{step}</span>
+                  <span className="text-xs mt-2 text-muted-foreground capitalize hidden sm:block">
+                    {isPickup && step === "shipped" ? "ready" : step}
+                  </span>
                 </div>
               ))}
             </div>
@@ -110,18 +119,27 @@ export default function OrderDetail() {
           </CardContent>
         </Card>
 
-        {/* Delivery info */}
+        {/* Fulfillment info */}
         <Card>
           <CardContent className="p-6">
-            <h2 className="font-bold text-lg mb-4">Delivery Information</h2>
+            <h2 className="font-bold text-lg mb-4">Fulfillment Information</h2>
             <div className="space-y-3 text-sm">
+              <div className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3">
+                {isPickup ? <Store className="mt-0.5 h-4 w-4 text-primary" /> : <Truck className="mt-0.5 h-4 w-4 text-primary" />}
+                <div>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Method</p>
+                  <p className="font-medium">{FULFILLMENT_LABELS[fulfillmentMethod] ?? "Home delivery"}</p>
+                </div>
+              </div>
               <div>
                 <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Customer</p>
                 <p className="font-medium">{order.customerName}</p>
                 <p className="text-muted-foreground">{order.customerEmail}</p>
               </div>
               <div>
-                <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Delivery Address</p>
+                <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">
+                  {isPickup ? "Pickup" : "Delivery Address"}
+                </p>
                 <p className="font-medium">{order.address}</p>
               </div>
               <div>

@@ -5,19 +5,26 @@ import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, ShoppingBag } from "lucide-react";
+import { CheckCircle, ShoppingBag, Store, Truck } from "lucide-react";
 import { Link } from "wouter";
+
+type FulfillmentMethod = "delivery" | "pickup";
 
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const createOrder = useCreateOrder();
-  const [form, setForm] = useState({ address: "", phone: "" });
+  const [form, setForm] = useState({
+    fulfillmentMethod: "delivery" as FulfillmentMethod,
+    address: "",
+    phone: "",
+  });
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
 
@@ -55,15 +62,25 @@ export default function Checkout() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.address.trim() || !form.phone.trim()) {
-      toast({ title: "Missing information", description: "Please fill in address and phone number.", variant: "destructive" });
+    if (form.fulfillmentMethod === "delivery" && !form.address.trim()) {
+      toast({ title: "Missing address", description: "Please fill in your delivery address.", variant: "destructive" });
+      return;
+    }
+    if (!form.phone.trim()) {
+      toast({ title: "Missing phone number", description: "Please fill in your phone number.", variant: "destructive" });
       return;
     }
     createOrder.mutate(
       {
         data: {
           items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-          address: form.address,
+          fulfillmentMethod: form.fulfillmentMethod,
+          address:
+            form.fulfillmentMethod === "pickup"
+              ? form.address.trim()
+                ? `Pick up from store - ${form.address.trim()}`
+                : "Pick up from store"
+              : form.address,
           phone: form.phone,
         },
       },
@@ -88,16 +105,49 @@ export default function Checkout() {
         <div className="md:col-span-3">
           <Card>
             <CardContent className="p-6">
-              <h2 className="font-bold text-xl mb-5">Delivery Details</h2>
+              <h2 className="font-bold text-xl mb-5">Order Details</h2>
               <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-3">
+                  <Label>Fulfillment Method</Label>
+                  <RadioGroup
+                    value={form.fulfillmentMethod}
+                    onValueChange={(value) => setForm((f) => ({ ...f, fulfillmentMethod: value as FulfillmentMethod }))}
+                    className="grid sm:grid-cols-2 gap-3"
+                  >
+                    <Label
+                      htmlFor="delivery"
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"
+                    >
+                      <RadioGroupItem id="delivery" value="delivery" className="mt-1" />
+                      <Truck className="mt-0.5 h-5 w-5 text-primary" />
+                      <span>
+                        <span className="block font-semibold">Home delivery</span>
+                        <span className="block text-xs font-normal text-muted-foreground">We will deliver to your address.</span>
+                      </span>
+                    </Label>
+                    <Label
+                      htmlFor="pickup"
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"
+                    >
+                      <RadioGroupItem id="pickup" value="pickup" className="mt-1" />
+                      <Store className="mt-0.5 h-5 w-5 text-primary" />
+                      <span>
+                        <span className="block font-semibold">Pick up from store</span>
+                        <span className="block text-xs font-normal text-muted-foreground">Book now, collect packed items at the store.</span>
+                      </span>
+                    </Label>
+                  </RadioGroup>
+                </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address">Delivery Address</Label>
+                  <Label htmlFor="address">
+                    {form.fulfillmentMethod === "pickup" ? "Pickup Note" : "Delivery Address"}
+                  </Label>
                   <Textarea
                     id="address"
-                    placeholder="House #, Street, Area, City"
+                    placeholder={form.fulfillmentMethod === "pickup" ? "Any note for store pickup (optional)" : "House #, Street, Area, City"}
                     value={form.address}
                     onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                    required
+                    required={form.fulfillmentMethod === "delivery"}
                     rows={3}
                     data-testid="input-address"
                   />
@@ -115,7 +165,7 @@ export default function Checkout() {
                   />
                 </div>
                 <Button type="submit" className="w-full h-12 font-bold text-base" disabled={createOrder.isPending} data-testid="button-place-order">
-                  {createOrder.isPending ? "Placing Order..." : `Place Order — Rs. ${totalPrice.toLocaleString()}`}
+                  {createOrder.isPending ? "Placing Order..." : `Place Order - Rs. ${totalPrice.toLocaleString()}`}
                 </Button>
               </form>
             </CardContent>
